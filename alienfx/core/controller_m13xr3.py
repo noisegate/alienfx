@@ -32,16 +32,16 @@ AlienFXControllerM13xR3 : M13xR3 controller
 import alienfx.core.controller as alienfx_controller
 
 class AlienFXControllerM13xr3(alienfx_controller.AlienFXController):
-    
+
     """ Specialization of the AlienFxController class for the m13xR3 controller.
     """
-    
-    # Speed capabilities. The higher the number, the slower the speed of 
-    # blink/morph actions. The min speed is selected by trial and error as 
+
+    # Speed capabilities. The higher the number, the slower the speed of
+    # blink/morph actions. The min speed is selected by trial and error as
     # the lowest value that will not result in strange blink/morph behaviour.
     DEFAULT_SPEED = 200
     MIN_SPEED = 50
-    
+
     # Zone codes
     LEFT_KEYBOARD = 0x0008
     MIDDLE_LEFT_KEYBOARD = 0x0004
@@ -61,7 +61,7 @@ class AlienFXControllerM13xr3(alienfx_controller.AlienFXController):
     # Reset codes
     RESET_ALL_LIGHTS_OFF = 3
     RESET_ALL_LIGHTS_ON = 4
-    
+
     # State codes
     BOOT = 1
     AC_SLEEP = 2
@@ -70,15 +70,24 @@ class AlienFXControllerM13xr3(alienfx_controller.AlienFXController):
     BATTERY_SLEEP = 7
     BATTERY_ON = 8
     BATTERY_CRITICAL = 9
+
+    #Controller Type
+    MYCONTROLLER = "new" #Defines the controllertype: old=pre Alienware 17R4 (4 bits per color) / new=AW17R4 and probably others, which are using 8 bits per color
     
     def __init__(self):
         alienfx_controller.AlienFXController.__init__(self)
         self.name = "Alienware m13xR3"
-        
+
         # USB VID and PID
         self.vendor_id = 0x187c
         self.product_id = 0x0529
-        
+
+        #Switch Controllertype
+        if self.MYCONTROLLER == "new":
+            self.switch_to_new_controller()
+        else:
+            self.switch_to_old_controller()
+
         # map the zone names to their codes
         self.zone_map = {
             self.ZONE_LEFT_KEYBOARD: self.LEFT_KEYBOARD,
@@ -90,18 +99,18 @@ class AlienFXControllerM13xr3(alienfx_controller.AlienFXController):
             self.ZONE_TOUCH_PAD: self.TOUCH_PAD,
             self.ZONE_POWER_BUTTON: self.POWER_BUTTON,
         }
-        
+
         # zones that have special behaviour in the different power states
         self.power_zones = [
             self.ZONE_POWER_BUTTON,
         ]
-        
+
         # map the reset names to their codes
         self.reset_types = {
             self.RESET_ALL_LIGHTS_OFF: "all-lights-off",
             self.RESET_ALL_LIGHTS_ON: "all-lights-on"
         }
-        
+
         # map the state names to their codes
         self.state_map = {
             self.STATE_BOOT: self.BOOT,
